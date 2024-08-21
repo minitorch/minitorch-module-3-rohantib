@@ -21,7 +21,9 @@ class Network(minitorch.Module):
         self.layer3 = Linear(hidden_layers, 1)
 
     def forward(self, x):
-        raise NotImplementedError("Need to include this file from past assignment.")
+        middle = self.layer1.forward(x).relu()
+        end = self.layer2.forward(middle).relu()
+        return self.layer3.forward(end).sigmoid()
 
 
 class Linear(minitorch.Module):
@@ -32,7 +34,9 @@ class Linear(minitorch.Module):
         self.out_size = out_size
 
     def forward(self, x):
-        raise NotImplementedError("Need to include this file from past assignment.")
+        W = self.weights.value
+        x = x.view(*x.shape, 1)
+        return (W * x).sum(1).view(x.shape[0], W.shape[1]) + self.bias.value
 
 
 def default_log_fn(epoch, total_loss, correct, losses):
@@ -42,6 +46,7 @@ def default_log_fn(epoch, total_loss, correct, losses):
 class TensorTrain:
     def __init__(self, hidden_layers):
         self.hidden_layers = hidden_layers
+        # NOTE: Model gets reset in train anyways - seems unnecessary in current implementation
         self.model = Network(hidden_layers)
 
     def run_one(self, x):
@@ -71,6 +76,7 @@ class TensorTrain:
             prob = (out * y) + (out - 1.0) * (y - 1.0)
 
             loss = -prob.log()
+            # NOTE: View seems unnecessary here, perhaps will be necessary with more complex architectures?
             (loss / data.N).sum().view(1).backward()
             total_loss = loss.sum().view(1)[0]
             losses.append(total_loss)

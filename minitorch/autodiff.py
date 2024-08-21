@@ -22,7 +22,9 @@ def central_difference(f: Any, *vals: Any, arg: int = 0, epsilon: float = 1e-6) 
     Returns:
         An approximation of $f'_i(x_0, \ldots, x_{n-1})$
     """
-    raise NotImplementedError("Need to include this file from past assignment.")
+    args_forward = (x + epsilon if i == arg else x for i, x in enumerate(vals))
+    args_backward = (x - epsilon if i == arg else x for i, x in enumerate(vals))
+    return (f(*args_forward) - f(*args_backward)) / (2 * epsilon)
 
 
 variable_count = 1
@@ -60,7 +62,19 @@ def topological_sort(variable: Variable) -> Iterable[Variable]:
     Returns:
         Non-constant Variables in topological order starting from the right.
     """
-    raise NotImplementedError("Need to include this file from past assignment.")
+    visited = set()
+    top_rev_order: List[Variable] = []
+
+    def top_helper(variable: Variable) -> None:
+        if variable.unique_id in visited or variable.is_constant():
+            return
+        visited.add(variable.unique_id)
+        for var in variable.parents:
+            top_helper(var)
+        top_rev_order.append(variable)
+
+    top_helper(variable)
+    return reversed(top_rev_order)
 
 
 def backpropagate(variable: Variable, deriv: Any) -> None:
@@ -74,7 +88,19 @@ def backpropagate(variable: Variable, deriv: Any) -> None:
 
     No return. Should write to its results to the derivative values of each leaf through `accumulate_derivative`.
     """
-    raise NotImplementedError("Need to include this file from past assignment.")
+    top_order = topological_sort(variable)
+    intermediate_derivs = {variable.unique_id: deriv}
+    for var in top_order:
+        if var.is_leaf():
+            continue
+        d = intermediate_derivs.pop(var.unique_id)
+        for parent, chain_d in var.chain_rule(d):
+            if parent.is_leaf():
+                parent.accumulate_derivative(chain_d)
+            else:
+                if parent.unique_id not in intermediate_derivs:
+                    intermediate_derivs[parent.unique_id] = 0.0
+                intermediate_derivs[parent.unique_id] += chain_d
 
 
 @dataclass
