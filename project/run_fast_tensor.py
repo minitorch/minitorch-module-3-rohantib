@@ -29,8 +29,9 @@ class Network(minitorch.Module):
         self.layer3 = Linear(hidden, 1, backend)
 
     def forward(self, x):
-        # TODO: Implement for Task 3.5.
-        raise NotImplementedError("Need to implement for Task 3.5")
+        middle = self.layer1.forward(x).relu()
+        end = self.layer2.forward(middle).relu()
+        return self.layer3.forward(end).sigmoid()
 
 
 class Linear(minitorch.Module):
@@ -43,8 +44,10 @@ class Linear(minitorch.Module):
         self.out_size = out_size
 
     def forward(self, x):
-        # TODO: Implement for Task 3.5.
-        raise NotImplementedError("Need to implement for Task 3.5")
+        # TODO: Change to matmul
+        W = self.weights.value
+        x = x.view(*x.shape, 1)
+        return (W * x).sum(1).view(x.shape[0], W.shape[1]) + self.bias.value
 
 
 class FastTrain:
@@ -66,7 +69,7 @@ class FastTrain:
         BATCH = 10
         losses = []
 
-        for epoch in range(max_epochs):
+        for epoch in range(1, max_epochs+1):
             total_loss = 0.0
             c = list(zip(data.X, data.y))
             random.shuffle(c)

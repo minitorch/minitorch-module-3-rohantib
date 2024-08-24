@@ -62,7 +62,7 @@ def sigmoid(x: float) -> float:
 
     for stability.
     """
-    return 1.0 / (1.0 + exp(-x)) if x >= 0 else exp(x) / (1.0 + exp(x))
+    return 1.0 / (1.0 + math.exp(-x)) if x >= 0 else math.exp(x) / (1.0 + math.exp(x))
 
 
 def relu(x: float) -> float:
@@ -109,12 +109,15 @@ def relu_back(x: float, d: float) -> float:
 
 def exp_back(x: float, d: float) -> float:
     r"If $f = exp$ compute $d \times f'(x)$"
-    return d * exp(x)
+    return d * math.exp(x)
 
 
 def sigmoid_back(x: float, d: float) -> float:
     r"If $f = sigmoid$ compute $d \times f'(x)$"
-    sig_x = sigmoid(x)
+    # NOTE: Had to copy sigmoid code here so `sigmoid_back` would JIT compile, since function calls are not allowed.
+    # I believe this is still more efficient than computing sigmoid inverse with tensor operations instead, as that will result in much more overhead.
+    # TODO: Potentially try to test that speed? Could take advantage of fack that sigmoid is already computed in inverse (same logic for exp)
+    sig_x = 1.0 / (1.0 + math.exp(-x)) if x >= 0 else math.exp(x) / (1.0 + math.exp(x))
     return d * sig_x * (1 - sig_x)
 
 
