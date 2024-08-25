@@ -44,10 +44,13 @@ class Linear(minitorch.Module):
         self.out_size = out_size
 
     def forward(self, x):
-        # TODO: Change to matmul
-        W = self.weights.value
-        x = x.view(*x.shape, 1)
-        return (W * x).sum(1).view(x.shape[0], W.shape[1]) + self.bias.value
+        # Matmul via broadcast and zip
+        # W = self.weights.value
+        # x = x.view(*x.shape, 1)
+        # return (W * x).sum(1).view(x.shape[0], W.shape[1]) + self.bias.value
+
+        # Direct matmul
+        return (x @ self.weights.value) + self.bias.value
 
 
 class FastTrain:

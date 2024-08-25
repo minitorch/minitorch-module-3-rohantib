@@ -46,3 +46,17 @@ Size of hidden layer: 30, Time per epoch: 0.133
 Spiral dataset, 75 points \
 Size of hidden layer: 50, Time per epoch: 0.183 \
 Size of hidden layer: 100, Time per epoch: 0.380 \
+
+### CPU - map, zip, reduce, matmul parallelized and JIT
+NOTE: Times are recorded after a startup run to compile the functions, locally as opposed to colab
+
+Simple dataset, 50 points \
+Size of hidden layer: 15, Time per epoch: 0.066
+
+XOR dataset, 75 points \
+Size of hidden layer: 30, Time per epoch: 0.108
+
+Spiral dataset, 75 points \
+Size of hidden layer: 50, Time per epoch: 0.116 \
+Size of hidden layer: 100, Time per epoch: 0.147 \
+Size of hidden layer: 200, Time per epoch: 0.266 \

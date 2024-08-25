@@ -321,14 +321,30 @@ def _tensor_matrix_multiply(
     Returns:
         None : Fills in `out`
     """
+    # NOTE: Unclear if this should work for matrices with more than 3 dimensions
     a_batch_stride = a_strides[0] if a_shape[0] > 1 else 0
     b_batch_stride = b_strides[0] if b_shape[0] > 1 else 0
+    rows = out_shape[1]
+    cols = out_shape[2]
+    common_dim = a_shape[2]
 
     # Iterate over batches
     for n in prange(out_shape[0]):
         out_start_ind: int = out_strides[0] * n
         a_start_ind: int = a_batch_stride * n
         b_start_ind: int = b_batch_stride * n
+        for i in prange(rows):
+            a_ind = a_start_ind + (i * a_strides[1])
+            for j in prange(cols):
+                b_ind = b_start_ind + (j * b_strides[2])
+                val = 0
+                # TODO: See if this is better parallel or not, or with a buffer that is summed after
+                for k in prange(common_dim):
+                    a_val = a_storage[a_ind + (k * a_strides[2])]
+                    b_val = b_storage[b_ind + (k * b_strides[1])]
+                    val += a_val * b_val
+                out_ind = out_start_ind + i * out_strides[1] + j * out_strides[2]
+                out[out_ind] = val
 
 
 tensor_matrix_multiply = njit(parallel=True, fastmath=True)(_tensor_matrix_multiply)

@@ -11,7 +11,7 @@ import minitorch
 
 
 def render_train_interface(
-    TrainCls, graph=True, hidden_layer=True, parameter_control=False
+    TrainCls, GPUBackend, graph=True, hidden_layer=True, parameter_control=False
 ):
     datasets_map = minitorch.datasets
     st.write("## Sandbox for Model Training")
@@ -46,7 +46,11 @@ def render_train_interface(
         G = graph_builder.GraphBuilder().run(one_output)
         return nx.nx_pydot.to_pydot(G).to_string()
 
+    # Run CUDA backend
+    # train = TrainCls(hidden_layers, backend=GPUBackend)
+    # Run CPU backend
     train = TrainCls(hidden_layers)
+
     if graph:
         graph = get_train(hidden_layers)
         if st.checkbox("Show Graph"):

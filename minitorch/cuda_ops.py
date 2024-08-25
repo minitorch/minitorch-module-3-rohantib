@@ -156,6 +156,7 @@ def tensor_map(
         # TODO: Implement for Task 3.3.
         raise NotImplementedError("Need to implement for Task 3.3")
 
+    # TODO: device=true here? should fail
     return cuda.jit()(_map)  # type: ignore
 
 
