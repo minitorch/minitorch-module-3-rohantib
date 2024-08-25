@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, Dict, Optional, Sequence, Tuple
+from typing import Any, Dict, List, Optional, Sequence, Tuple
 
 
 class Module:
@@ -31,11 +31,15 @@ class Module:
 
     def train(self) -> None:
         "Set the mode of this module and all descendent modules to `train`."
-        raise NotImplementedError("Need to include this file from past assignment.")
+        self.training = True
+        for module in self.modules():
+            module.train()
 
     def eval(self) -> None:
         "Set the mode of this module and all descendent modules to `eval`."
-        raise NotImplementedError("Need to include this file from past assignment.")
+        self.training = False
+        for module in self.modules():
+            module.eval()
 
     def named_parameters(self) -> Sequence[Tuple[str, Parameter]]:
         """
@@ -45,11 +49,19 @@ class Module:
         Returns:
             The name and `Parameter` of each ancestor parameter.
         """
-        raise NotImplementedError("Need to include this file from past assignment.")
+        ls: List[Tuple[str, Parameter]] = list(self._parameters.items())
+        for mod_name, module in self._modules.items():
+            subparams: Sequence[Tuple[str, Parameter]] = module.named_parameters()
+            for p_name, p in subparams:
+                ls.append((f"{mod_name}.{p_name}", p))
+        return ls
 
     def parameters(self) -> Sequence[Parameter]:
         "Enumerate over all the parameters of this module and its descendents."
-        raise NotImplementedError("Need to include this file from past assignment.")
+        ls: List[Parameter] = list(self._parameters.values())
+        for module in self.modules():
+            ls.extend(module.parameters())
+        return ls
 
     def add_parameter(self, k: str, v: Any) -> Parameter:
         """
@@ -115,9 +127,9 @@ class Module:
 
 class Parameter:
     """
-    A Parameter is a special container stored in a `Module`.
+    A Parameter is a special container stored in a :class:`Module`.
 
-    It is designed to hold a `Variable`, but we allow it to hold
+    It is designed to hold a :class:`Variable`, but we allow it to hold
     any value for testing.
     """
 
@@ -125,6 +137,7 @@ class Parameter:
         self.value = x
         self.name = name
         if hasattr(x, "requires_grad_"):
+            # NOTE: This is NECESSARY to reset the history of any computations that may have been done in constructing the parameter thus far.
             self.value.requires_grad_(True)
             if self.name:
                 self.value.name = self.name

@@ -30,3 +30,33 @@ python sync_previous_module.py previous-module-dir current-module-dir
 The files that will be synced are:
 
         minitorch/tensor_data.py minitorch/tensor_functions.py minitorch/tensor_ops.py minitorch/operators.py minitorch/module.py minitorch/autodiff.py minitorch/module.py project/run_manual.py project/run_scalar.py project/run_tensor.py
+
+### CPU - map, zip, reduce parallelized and JIT
+NOTE: Times are recorded after a startup run to compile the functions, locally as opposed to colab
+
+Simple dataset, 50 points \
+Size of hidden layer: 2, Time per epoch: 0.074 \
+Size of hidden layer: 10, Time per epoch: 0.079 \
+Size of hidden layer: 15, Time per epoch: 0.080
+
+XOR dataset, 75 points \
+Size of hidden layer: 15, Time per epoch: 0.112 \
+Size of hidden layer: 30, Time per epoch: 0.133
+
+Spiral dataset, 75 points \
+Size of hidden layer: 50, Time per epoch: 0.183 \
+Size of hidden layer: 100, Time per epoch: 0.380 \
+
+### CPU - map, zip, reduce, matmul parallelized and JIT
+NOTE: Times are recorded after a startup run to compile the functions, locally as opposed to colab
+
+Simple dataset, 50 points \
+Size of hidden layer: 15, Time per epoch: 0.066
+
+XOR dataset, 75 points \
+Size of hidden layer: 30, Time per epoch: 0.108
+
+Spiral dataset, 75 points \
+Size of hidden layer: 50, Time per epoch: 0.116 \
+Size of hidden layer: 100, Time per epoch: 0.147 \
+Size of hidden layer: 200, Time per epoch: 0.266 \

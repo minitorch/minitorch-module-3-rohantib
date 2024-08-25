@@ -95,11 +95,11 @@ if module_selection == "Module 2":
 
 
 if module_selection == "Module 3":
-    from run_fast_tensor import FastTrain
+    from run_fast_tensor import FastTrain, GPUBackend
 
     def render_run_fast_interface():
         st.header("Module 3 - Efficient")
-        render_train_interface(FastTrain, False)
+        render_train_interface(FastTrain, GPUBackend, False)
 
     PAGES["Module 3: Efficient"] = render_run_fast_interface
 
